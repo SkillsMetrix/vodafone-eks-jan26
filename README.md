@@ -1,1 +1,0 @@
-# vodafone-eks-jan26

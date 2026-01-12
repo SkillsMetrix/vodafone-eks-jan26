@@ -1,0 +1,20 @@
+# build stage
+FROM openjdk:11-ea-jdk-slim AS builder
+
+WORKDIR /app
+
+COPY Welcome.java .
+
+RUN javac Welcome.java
+
+
+
+# Runtime Stage
+
+FROM openjdk:11-ea-jre-slim
+
+WORKDIR /app
+
+COPY --from=builder /app/Welcome.class .
+
+CMD [ "java", "Welcome"]

@@ -1,26 +1,29 @@
-apiVersion: v1
-kind: Pod
+ 
+apiVersion: apps/v1
+kind: Deployment
 metadata:
-  name: app-pod-cm
-  labels:
-    name: myapp
+  name: secret-demo
 spec:
-  containers:
-  - name: myapp
-    image: busybox
-    command: ["sh", "-c", "env && sleep 3600"]
-    env:
-      - name: APP_NAME
-        valueFrom:
-          configMapKeyRef:
-            name: my-config
-            key: APP_NAME
-      - name: APP_ENV
-        valueFrom:
-          configMapKeyRef:
-            name: my-config
-            key: APP_ENV
-
-
--------
-
+  replicas: 1
+  selector:
+    matchLabels:
+      app: secret-demo
+  template:
+    metadata:
+      labels:
+        app: secret-demo
+    spec:
+      containers:
+      - name: demo-container
+        image: nginx
+        env:
+        - name: USER_NAME
+          valueFrom:
+            secretKeyRef:
+              name: my-secret
+              key: username
+        - name: PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: my-secret
+              key: password

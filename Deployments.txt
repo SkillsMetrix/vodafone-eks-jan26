@@ -1,29 +1,38 @@
- 
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: secret-demo
+  name: demo-app
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: secret-demo
+      app: demo-app
   template:
     metadata:
       labels:
-        app: secret-demo
+        app: demo-app
     spec:
       containers:
       - name: demo-container
-        image: nginx
+        image: busybox
+        command: ["sh", "-c", "echo Starting... && sleep 3600"]
+        envFrom:
+          - configMapRef:
+              name: my-config
         env:
-        - name: USER_NAME
-          valueFrom:
-            secretKeyRef:
-              name: my-secret
-              key: username
-        - name: PASSWORD
-          valueFrom:
-            secretKeyRef:
-              name: my-secret
-              key: password
+          - name: USERNAME
+            valueFrom:
+              secretKeyRef:
+                name: my-secret
+                key: username
+          - name: PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: my-secret
+                key: password
+        volumeMounts:
+          - name: temp-storage
+            mountPath: /tmp/data
+      volumes:
+        - name: temp-storage
+          emptyDir: {}

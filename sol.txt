@@ -1,63 +1,39 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: green-deploy
-  labels:
-    app: nginx-app
+  name: nginx-deployment
 spec:
-  replicas: 3
+  replicas: 1
+  selector:
+    matchLabels:
+      app: nginx
   template:
     metadata:
       labels:
-        app: nginx-app
+        app: nginx
     spec:
       containers:
-      - name: nginx-container
-        image: cammey20/amar_custom_nginx
+      - name: nginx
+        image: nginx:latest
         ports:
         - containerPort: 80
-  selector:
-    matchLabels:
-      app: nginx-app
-
-
-
-----
-
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: blue-deploy
-  labels:
-    app: nginx-app
-spec:
-  replicas: 3
-  template:
-    metadata:
-      labels:
-        app: nginx-app
-    spec:
-      containers:
-      - name: nginx-container
-        image: nginx:1.7.9
-        ports:
-        - containerPort: 80
-  selector:
-    matchLabels:
-      app: nginx-app
-
-
-
---
+        resources:
+          requests:
+            cpu: 100m
+            memory: 128Mi
+          limits:
+            cpu: 300m
+            memory: 256Mi
+-----
 
 apiVersion: v1
 kind: Service
 metadata:
-  name: load-balance
+  name: nginx-service
 spec:
-  type: LoadBalancer
   selector:
-    app: nginx-app
+    app: nginx
   ports:
-  - port: 80
-    targetPort: 80
+    - port: 80
+      targetPort: 80
+  type: ClusterIP
